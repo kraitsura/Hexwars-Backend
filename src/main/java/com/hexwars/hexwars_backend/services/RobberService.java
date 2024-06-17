@@ -62,6 +62,7 @@ public class RobberService {
             } else {
                 System.out.println("Invalid choice.");
             }
+            scanner.close();
         }
 
         boardRepository.save(board); // Persist changes to the board

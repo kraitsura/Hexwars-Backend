@@ -19,7 +19,6 @@ public class BoardService {
     @Autowired
     private PlayerRepository playerRepository;
 
-    // Add initial settlement
     public boolean addInitialSettlement(Long boardId, Player player, Coordinate coord) {
         Board board = boardRepository.findById(boardId).orElse(null);
         if (board == null) {
@@ -51,7 +50,6 @@ public class BoardService {
         return true;
     }
 
-    // Method to place a building (settlement or city)
     public boolean placeBuilding(Long boardId, Coordinate coord, Player player, boolean isCity) {
         Board board = boardRepository.findById(boardId).orElse(null);
         if (board == null) {
