@@ -6,6 +6,7 @@ import java.util.HashMap;
 import java.util.List;
 import java.util.Map;
 
+import com.hexwars.hexwars_backend.models.enums.PortType;
 import com.hexwars.hexwars_backend.models.enums.TileType;
 
 @Getter
@@ -110,5 +111,28 @@ public class HexMap {
 
     private void placeTiles() {
         // rand tiles here
-    }  
+    }
+    
+    // Helper method to set a port on a specific edge
+    private void setPort(Edge edge, PortType portType) {
+        if (roads.containsKey(edge)) {
+            Edge existingEdge = roads.keySet().stream().filter(e -> e.equals(edge)).findFirst().orElse(null);
+            if (existingEdge != null) {
+                existingEdge.setPort(portType);
+            }
+        } else {
+            edge.setPort(portType);
+            roads.put(edge, null);
+        }
+    }
+
+    // Method to change the type of a tile
+    public void changeTileType(Coordinate coordinate, TileType newType) {
+        Tile tile = tiles.get(coordinate);
+        if (tile != null) {
+            tile.setType(newType);
+        } else {
+            throw new IllegalArgumentException("No tile found at the specified coordinates.");
+        }
+    }
 }

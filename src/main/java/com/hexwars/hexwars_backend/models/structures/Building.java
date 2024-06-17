@@ -93,4 +93,12 @@ public class Building {
         this.hasCity = true;
         this.hasSettlement = false;
     }
+
+    public boolean hasSettlement() {
+        return hasSettlement;
+    }
+
+    public boolean hasCity() {
+        return hasCity;
+    }
 }

@@ -3,13 +3,17 @@ package com.hexwars.hexwars_backend.models.structures;
 
 import lombok.Data;
 
+import java.io.Serializable;
+
 import com.hexwars.hexwars_backend.models.enums.PortType;
 
 import jakarta.persistence.Embeddable;
 
 @Data
 @Embeddable
-public class Edge {
+public class Edge implements Serializable {
+    private static final long serialVersionUID = 1L;
+    
     private Coordinate start;
     private Coordinate end;
     private PortType port = PortType.NONE;

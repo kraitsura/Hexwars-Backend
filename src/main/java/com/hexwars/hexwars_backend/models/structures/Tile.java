@@ -69,6 +69,10 @@ public class Tile {
         this.edges.add(edge);
     }
 
+    public boolean hasRobber() {
+        return hasRobber;
+    }
+
     // Custom toString to include vertices and edges details
     @Override
     public String toString() {
