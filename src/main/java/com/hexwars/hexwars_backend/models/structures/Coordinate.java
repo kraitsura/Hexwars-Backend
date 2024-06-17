@@ -1,12 +1,12 @@
-package com.hexwars.hexwars_backend.models;
+package com.hexwars.hexwars_backend.models.structures;
 
 import lombok.Data;
+import jakarta.persistence.Embeddable;
 import lombok.AllArgsConstructor;
-import lombok.Builder;
 
 @Data
 @AllArgsConstructor
-@Builder
+@Embeddable
 public class Coordinate {
     private double x;
     private double y;

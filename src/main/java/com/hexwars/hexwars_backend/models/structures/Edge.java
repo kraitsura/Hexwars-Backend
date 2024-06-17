@@ -1,11 +1,14 @@
-package com.hexwars.hexwars_backend.models;
+package com.hexwars.hexwars_backend.models.structures;
 
 
 import lombok.Data;
 
 import com.hexwars.hexwars_backend.models.enums.PortType;
 
+import jakarta.persistence.Embeddable;
+
 @Data
+@Embeddable
 public class Edge {
     private Coordinate start;
     private Coordinate end;

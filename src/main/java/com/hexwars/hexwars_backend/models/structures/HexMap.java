@@ -1,4 +1,4 @@
-package com.hexwars.hexwars_backend.models;
+package com.hexwars.hexwars_backend.models.structures;
 
 import lombok.Getter;
 

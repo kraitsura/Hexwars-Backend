@@ -1,5 +1,9 @@
 package com.hexwars.hexwars_backend.models;
 
+import com.hexwars.hexwars_backend.models.enums.DevCardType;
+import com.hexwars.hexwars_backend.models.enums.PlayerType;
+import com.hexwars.hexwars_backend.models.enums.ResourceType;
+
 import lombok.Data;
 import lombok.AllArgsConstructor;
 import lombok.Builder;
@@ -7,20 +11,42 @@ import lombok.Builder;
 import java.util.HashMap;
 import java.util.Map;
 
-import com.hexwars.hexwars_backend.models.enums.DevCardType;
-import com.hexwars.hexwars_backend.models.enums.PlayerType;
-import com.hexwars.hexwars_backend.models.enums.ResourceType;
+import jakarta.persistence.Entity;
+import jakarta.persistence.GeneratedValue;
+import jakarta.persistence.GenerationType;
+import jakarta.persistence.Id;
+import jakarta.persistence.ElementCollection;
+import jakarta.persistence.EnumType;
+import jakarta.persistence.Enumerated;
+import jakarta.persistence.JoinColumn;
+import jakarta.persistence.ManyToOne;
 
+@Entity
 @Data
 @AllArgsConstructor
 @Builder
 public class Player {
+    @Id
+    @GeneratedValue(strategy = GenerationType.IDENTITY)
+    private Long id;
+
+    @Enumerated(EnumType.STRING)
     private PlayerType color;
+
     private String name;
     private int victoryPoints;
+
+    @ElementCollection
     private Map<ResourceType, Integer> resources;
+
+    @ElementCollection
     private Map<DevCardType, Integer> devCards;
+
     private int position;
+
+    @ManyToOne
+    @JoinColumn(name = "game_session_id")
+    private GameSession gameSession;
 
     public Player(PlayerType color, String name) {
         this.color = color;

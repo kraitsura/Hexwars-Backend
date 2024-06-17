@@ -1,22 +1,47 @@
-package com.hexwars.hexwars_backend.models;
+package com.hexwars.hexwars_backend.models.structures;
 
+import com.hexwars.hexwars_backend.models.Player;
+import com.hexwars.hexwars_backend.models.enums.StructureType;
 import lombok.Data;
 import lombok.NoArgsConstructor;
 
+import jakarta.persistence.Entity;
+import jakarta.persistence.GeneratedValue;
+import jakarta.persistence.GenerationType;
+import jakarta.persistence.Id;
+import jakarta.persistence.ManyToOne;
+import jakarta.persistence.JoinColumn;
+import jakarta.persistence.ElementCollection;
+import jakarta.persistence.Embedded;
+import jakarta.persistence.EnumType;
+import jakarta.persistence.Enumerated;
 import java.util.HashSet;
 import java.util.Map;
 import java.util.Set;
 
-import com.hexwars.hexwars_backend.models.enums.StructureType;
-
+@Entity
 @Data
 @NoArgsConstructor
 public class Building {
+
+    @Id
+    @GeneratedValue(strategy = GenerationType.IDENTITY)
+    private Long id;
+
+    @ManyToOne
+    @JoinColumn(name = "player_id", nullable = true) // Allow null values
     private Player player;
+
+    @Enumerated(EnumType.STRING)
     private StructureType structureType;
+
+    @ElementCollection
     private Set<Coordinate> adjacentSpots = new HashSet<>();
+
     private boolean hasSettlement = false;
     private boolean hasCity = false;
+
+    @Embedded
     private Coordinate coordinate;
 
     public Building(Player player, StructureType structureType, Coordinate coord) {
@@ -57,13 +82,15 @@ public class Building {
         return false;
     }
 
-    public void placeSettlement() {
+    public void placeSettlement(Player player) {
+        this.player = player;
+        this.structureType = StructureType.SETTLEMENT;
         this.hasSettlement = true;
     }
 
     public void placeCity() {
+        this.structureType = StructureType.CITY;
         this.hasCity = true;
         this.hasSettlement = false;
     }
-
 }
