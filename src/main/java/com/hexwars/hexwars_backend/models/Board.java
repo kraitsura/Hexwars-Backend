@@ -6,11 +6,13 @@ import java.util.Map;
 
 import com.hexwars.hexwars_backend.models.structures.Building;
 import com.hexwars.hexwars_backend.models.structures.Coordinate;
+import com.hexwars.hexwars_backend.models.structures.DevDeck;
 import com.hexwars.hexwars_backend.models.structures.Edge;
 import com.hexwars.hexwars_backend.models.structures.HexMap;
 import com.hexwars.hexwars_backend.models.structures.Road;
 import com.hexwars.hexwars_backend.models.structures.Tile;
 
+import jakarta.persistence.CascadeType;
 import jakarta.persistence.CollectionTable;
 import jakarta.persistence.ElementCollection;
 import jakarta.persistence.Entity;
@@ -20,6 +22,7 @@ import jakarta.persistence.Id;
 import jakarta.persistence.JoinColumn;
 import jakarta.persistence.ManyToOne;
 import jakarta.persistence.MapKeyClass;
+import jakarta.persistence.OneToOne;
 
 @Entity
 @Getter
@@ -43,6 +46,10 @@ public class Board {
     @MapKeyClass(Coordinate.class)
     @CollectionTable(name = "board_tiles", joinColumns = @JoinColumn(name = "board_id"))
     private Map<Coordinate, Tile> tiles;
+
+    @OneToOne(cascade = CascadeType.ALL)
+    @JoinColumn(name = "dev_deck_id", referencedColumnName = "id")
+    private DevDeck devDeck;
 
     @ManyToOne
     @JoinColumn(name = "game_session_id")

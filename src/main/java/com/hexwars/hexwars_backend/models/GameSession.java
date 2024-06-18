@@ -1,7 +1,6 @@
 package com.hexwars.hexwars_backend.models;
 
 import lombok.Data;
-import lombok.NoArgsConstructor;
 
 import jakarta.persistence.Entity;
 import jakarta.persistence.GeneratedValue;
@@ -16,7 +15,6 @@ import java.util.List;
 
 @Entity
 @Data
-@NoArgsConstructor
 public class GameSession {
     @Id
     @GeneratedValue(strategy = GenerationType.IDENTITY)
@@ -31,10 +29,10 @@ public class GameSession {
     @OneToMany(mappedBy = "gameSession", cascade = CascadeType.ALL, orphanRemoval = true)
     private List<Player> players;
 
-    public GameSession(String sessionName, LocalDateTime createdAt, Board board, List<Player> players) {
+    public GameSession(String sessionName, LocalDateTime createdAt, List<Player> players) {
         this.sessionName = sessionName;
         this.createdAt = createdAt;
-        this.board = board;
+        this.board = new Board();
         this.players = players;
     }
 
