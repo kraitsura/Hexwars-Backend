@@ -1,13 +1,13 @@
 package com.hexwars.hexwars_backend.services;
 
-import com.hexwars.hexwars_backend.models.*;
+import com.hexwars.hexwars_backend.models.structures.*;
+import com.hexwars.hexwars_backend.models.Player;
+import com.hexwars.hexwars_backend.models.enums.CostType;
 import com.hexwars.hexwars_backend.models.enums.DevCardType;
 import com.hexwars.hexwars_backend.models.enums.ResourceType;
-import com.hexwars.hexwars_backend.models.structures.*;
 import com.hexwars.hexwars_backend.repository.PlayerRepository;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.stereotype.Service;
-
 
 import java.util.HashMap;
 import java.util.Map;
@@ -26,25 +26,28 @@ public class PlayerService {
     private PlayerRepository playerRepository;
 
     @Autowired
-    private 
+    private CostService costManager;
 
     public void build(Player player, Scanner scanner) {
         System.out.println("Choose what to build: (1) Settlement, (2) City, (3) Road");
         int choice = scanner.nextInt();
         scanner.nextLine(); // Consume newline
 
+        CostType costType;
         switch (choice) {
             case 1:
+                costType = CostType.SETTLEMENT;
                 System.out.println("Enter the coordinates to place the settlement:");
                 String settlementCoords = scanner.nextLine();
                 Coordinate settlementCoordinate = parseCoordinate(settlementCoords);
-                if (settlementCoordinate != null && boardService.placeBuilding(gameSessionService.getBoard().getId(), settlementCoordinate, player, false)) {
+                if (settlementCoordinate != null && boardService.placeBuilding(player.getBoard().getId(), settlementCoordinate, player, false)) {
                     System.out.println("Settlement placed successfully.");
                 } else {
                     System.out.println("Failed to place settlement.");
                 }
                 break;
             case 2:
+                costType = CostType.CITY;
                 System.out.println("Enter the coordinates to upgrade to a city:");
                 String cityCoords = scanner.nextLine();
                 Coordinate cityCoordinate = parseCoordinate(cityCoords);
@@ -55,6 +58,7 @@ public class PlayerService {
                 }
                 break;
             case 3:
+                costType = CostType.ROAD;
                 System.out.println("Enter the coordinates for the road (format 'x1,y1-x2,y2'):");
                 String roadCoords = scanner.nextLine();
                 String[] roadParts = roadCoords.split("-");
@@ -72,6 +76,16 @@ public class PlayerService {
                 break;
             default:
                 System.out.println("Invalid choice.");
+                return;
+        }
+
+        // Check if the player can afford the build
+        if (costManager.canAfford(costType, player.getResources())) {
+            costManager.deductCost(costType, player.getResources());
+            playerRepository.save(player);
+            System.out.println("Resources deducted for " + costType.name());
+        } else {
+            System.out.println("Insufficient resources to build " + costType.name());
         }
     }
 
@@ -141,14 +155,13 @@ public class PlayerService {
         }
 
         DevCardType chosenCard = DevCardType.values()[choice];
-        Map<ResourceType, Integer> cost = chosenCard.getCost();
 
-        if (!player.hasRequiredResources(cost)) {
+        if (!costManager.canAfford(CostType.DEVELOPMENT_CARD, player.getResources())) {
             System.out.println("Not enough resources to buy the development card.");
             return;
         }
 
-        player.useResources(cost);
+        costManager.deductCost(CostType.DEVELOPMENT_CARD, player.getResources());
         player.addDevelopmentCard(chosenCard);
         playerRepository.save(player);
         System.out.println("Development card " + chosenCard.name() + " purchased successfully.");
