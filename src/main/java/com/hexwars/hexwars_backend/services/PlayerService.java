@@ -40,7 +40,7 @@ public class PlayerService {
                 System.out.println("Enter the coordinates to place the settlement:");
                 String settlementCoords = scanner.nextLine();
                 Coordinate settlementCoordinate = parseCoordinate(settlementCoords);
-                if (settlementCoordinate != null && boardService.placeBuilding(player.getBoard().getId(), settlementCoordinate, player, false)) {
+                if (settlementCoordinate != null && boardService.placeBuilding(getBoardId(player), settlementCoordinate, player, false)) {
                     System.out.println("Settlement placed successfully.");
                 } else {
                     System.out.println("Failed to place settlement.");
@@ -51,7 +51,7 @@ public class PlayerService {
                 System.out.println("Enter the coordinates to upgrade to a city:");
                 String cityCoords = scanner.nextLine();
                 Coordinate cityCoordinate = parseCoordinate(cityCoords);
-                if (cityCoordinate != null && boardService.placeBuilding(player.getBoard().getId(), cityCoordinate, player, true)) {
+                if (cityCoordinate != null && boardService.placeBuilding(getBoardId(player), cityCoordinate, player, true)) {
                     System.out.println("City upgraded successfully.");
                 } else {
                     System.out.println("Failed to upgrade to city.");
@@ -65,7 +65,7 @@ public class PlayerService {
                 if (roadParts.length == 2) {
                     Coordinate roadStart = parseCoordinate(roadParts[0]);
                     Coordinate roadEnd = parseCoordinate(roadParts[1]);
-                    if (roadStart != null && roadEnd != null && boardService.placeRoad(player.getBoard().getId(), player, new Edge(roadStart, roadEnd))) {
+                    if (roadStart != null && roadEnd != null && boardService.placeRoad(getBoardId(player), player, new Edge(roadStart, roadEnd))) {
                         System.out.println("Road placed successfully.");
                     } else {
                         System.out.println("Failed to place road.");
@@ -90,7 +90,7 @@ public class PlayerService {
     }
 
     public void trade(Player player, Scanner scanner) {
-        System.out.println("Do you want to trade with (1) Another player or (2) The bank?");
+        System.out.println("Do you want to trade with (1) Another player or (2) The bank or (3) make an open offer?");
         int choice = scanner.nextInt();
         scanner.nextLine(); // Consume newline
 
@@ -136,6 +136,23 @@ public class PlayerService {
                     System.out.println("Trade with bank failed.");
                 }
                 break;
+            case 3:
+                System.out.println("Enter the resources you want to offer (format 'wood:1,brick:1'):");
+                String offer = scanner.nextLine();
+                Map<ResourceType, Integer> offerMap = parseResources(offer);
+
+                System.out.println("Enter the resources you want in return (format 'wood:1,brick:1'):");
+                String request = scanner.nextLine();
+                Map<ResourceType, Integer> requestMap = parseResources(request);
+
+                System.out.println("Trade offer failed.");
+
+                // if (tradeService.openTrade(player, offerMap, requestMap)) {
+                //     System.out.println("Trade offer posted successfully.");
+                // } else {
+                //     System.out.println("Trade offer failed.");
+                // }
+                break;
             default:
                 System.out.println("Invalid choice.");
         }
@@ -165,6 +182,10 @@ public class PlayerService {
         player.addDevelopmentCard(chosenCard);
         playerRepository.save(player);
         System.out.println("Development card " + chosenCard.name() + " purchased successfully.");
+    }
+
+    private Long getBoardId(Player player) {
+        return player.getGameSession().getBoard().getId();
     }
 
     private Coordinate parseCoordinate(String input) {

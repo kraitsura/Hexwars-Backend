@@ -4,6 +4,7 @@ import com.hexwars.hexwars_backend.models.*;
 import com.hexwars.hexwars_backend.models.structures.*;
 import com.hexwars.hexwars_backend.models.enums.*;
 import com.hexwars.hexwars_backend.repository.BoardRepository;
+import com.hexwars.hexwars_backend.repository.GameSessionRepository;
 import com.hexwars.hexwars_backend.repository.PlayerRepository;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.stereotype.Service;
@@ -18,6 +19,9 @@ public class BoardService {
 
     @Autowired
     private PlayerRepository playerRepository;
+
+    @Autowired
+    private GameSessionRepository gameSessionRepository;
 
     public boolean addInitialSettlement(Long boardId, Player player, Coordinate coord) {
         Board board = boardRepository.findById(boardId).orElse(null);

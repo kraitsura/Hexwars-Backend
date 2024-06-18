@@ -38,4 +38,12 @@ public class SessionService {
     public Board getBoard(Long id) {
         return gameSessionRepository.findById(id).orElse(null).getBoard();
     }
+
+    public void updateBoard(Board board) {
+        gameSessionRepository.save(board.getGameSession());
+    }
+
+    public Board getBoardByPlayerId(Long playerId) {
+        return gameSessionRepository.findByPlayerId(playerId).getBoard();
+    }
 }
