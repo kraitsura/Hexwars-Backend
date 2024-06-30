@@ -5,7 +5,7 @@ public enum PortType {
     GENERIC,
     WOOD,
     BRICK,
-    SHEEP,
-    WHEAT,
+    WOOL,
+    GRAIN,
     ORE
 }

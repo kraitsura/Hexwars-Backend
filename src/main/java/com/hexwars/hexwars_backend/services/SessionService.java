@@ -9,6 +9,7 @@ import com.hexwars.hexwars_backend.models.Board;
 
 import com.hexwars.hexwars_backend.models.GameSession;
 import com.hexwars.hexwars_backend.repository.GameSessionRepository;
+import com.hexwars.hexwars_backend.repository.PlayerRepository;
 
 @Service
 public class SessionService {
@@ -16,11 +17,20 @@ public class SessionService {
     @Autowired
     private GameSessionRepository gameSessionRepository;
 
+    @Autowired
+    private PlayerRepository playerRepository;
+
     public GameSession createGameSession() {
         LocalDateTime localTime = LocalDateTime.now();
-        GameSession gameSession = new GameSession(null, localTime, null);
+        GameSession gameSession = new GameSession(localTime);
         gameSessionRepository.save(gameSession);
         return gameSession;
+    }
+
+    public void addPlayerbyId(Long id, Long playerId) {
+        GameSession gameSession = gameSessionRepository.findById(id).orElse(null);
+        gameSession.addPlayer(playerRepository.findByID(playerId));
+        gameSessionRepository.save(gameSession);
     }
 
     public GameSession getGameSession(Long id) {
@@ -43,7 +53,7 @@ public class SessionService {
         gameSessionRepository.save(board.getGameSession());
     }
 
-    public Board getBoardByPlayerId(Long playerId) {
-        return gameSessionRepository.findByPlayerId(playerId).getBoard();
+    public void deleteGameSession(GameSession gameSession) {
+        gameSessionRepository.delete(gameSession);
     }
 }

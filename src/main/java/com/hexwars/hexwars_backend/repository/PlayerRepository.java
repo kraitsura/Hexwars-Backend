@@ -6,4 +6,5 @@ import org.springframework.data.jpa.repository.JpaRepository;
 public interface PlayerRepository extends JpaRepository<Player, Long> {
     // You can define custom query methods here if needed
     public Player findByName(String name);
+    public Player findByID(Long id);
 }

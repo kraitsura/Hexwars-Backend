@@ -2,33 +2,22 @@ package com.hexwars.hexwars_backend.models.structures;
 
 import com.hexwars.hexwars_backend.models.enums.TileType;
 
-import lombok.Data;
+import lombok.EqualsAndHashCode;
+import lombok.Getter;
 import lombok.NoArgsConstructor;
+import lombok.Setter;
 
-import java.util.ArrayList;
-import java.util.List;
+import jakarta.persistence.*;
 import java.util.HashSet;
 import java.util.Set;
 
-import jakarta.persistence.Id;
-import jakarta.persistence.EnumType;
-import jakarta.persistence.CollectionTable;
-import jakarta.persistence.Column;
-import jakarta.persistence.ElementCollection;
-import jakarta.persistence.Embedded;
-import jakarta.persistence.Entity;
-import jakarta.persistence.Enumerated;
-import jakarta.persistence.GeneratedValue;
-import jakarta.persistence.GenerationType;
-import jakarta.persistence.JoinColumn;
-import jakarta.persistence.JoinTable;
-import jakarta.persistence.ManyToMany;
-
 @Entity
-@Data
+@Table(name = "tiles")
+@Getter
+@Setter
+@EqualsAndHashCode
 @NoArgsConstructor
 public class Tile {
-
     @Id
     @GeneratedValue(strategy = GenerationType.IDENTITY)
     private Long id;
@@ -37,55 +26,71 @@ public class Tile {
     private Coordinate coordinate;
 
     @Enumerated(EnumType.STRING)
+    @Column(nullable = false)
     private TileType type;
 
-    @ElementCollection
-    @CollectionTable(name = "tile_vertices", joinColumns = @JoinColumn(name = "tile_id"))
-    @Column(name = "vertex")
-    private List<Coordinate> vertices = new ArrayList<>();
+    @Column(nullable = false)
+    private int number;
+
+    @Column(nullable = false)
+    private boolean hasRobber;
+
+    @Column(nullable = false)
+    private boolean isCoastalTile;
+
+    @ManyToMany
+    @JoinTable(
+        name = "tile_vertices",
+        joinColumns = @JoinColumn(name = "tile_id"),
+        inverseJoinColumns = @JoinColumn(name = "building_spot_id")
+    )
+    private Set<BuildingSpot> vertices = new HashSet<>();
 
     @ManyToMany
     @JoinTable(
         name = "tile_edges",
         joinColumns = @JoinColumn(name = "tile_id"),
-        inverseJoinColumns = @JoinColumn(name = "edge_id")
+        inverseJoinColumns = @JoinColumn(name = "road_spot_id")
     )
-    private Set<Edge> edges = new HashSet<>();
-
-    private int number;
-    private boolean hasRobber = false;
+    private Set<RoadSpot> edges = new HashSet<>();
 
     public Tile(Coordinate coordinate, TileType type, int number) {
         this.coordinate = coordinate;
         this.type = type;
         this.number = number;
+        this.hasRobber = type == TileType.DESERT;
+        this.isCoastalTile = false;
     }
 
-    public void addVertex(Coordinate vertex) {
-        this.vertices.add(vertex);
+    public void addVertex(BuildingSpot vertex) {
+        vertices.add(vertex);
     }
 
-    public void addEdge(Edge edge) {
-        this.edges.add(edge);
+    public void addEdge(RoadSpot edge) {
+        edges.add(edge);
     }
 
-    public boolean hasRobber() {
-        return hasRobber;
+    public boolean isProductionTile() {
+        return type != TileType.DESERT && number != 0;
     }
 
-    // Custom toString to include vertices and edges details
+    // Utility method to check if this tile is adjacent to another tile
+    public boolean isAdjacentTo(Tile other) {
+        int dx = (int) (this.coordinate.getX() - other.coordinate.getX());
+        int dy = (int) (this.coordinate.getY() - other.coordinate.getY());
+        int dz = -dx - dy;
+        return Math.max(Math.abs(dx), Math.max(Math.abs(dy), Math.abs(dz))) == 1;
+    }
+
     @Override
     public String toString() {
-        StringBuilder sb = new StringBuilder();
-        sb.append("Tile at ").append(coordinate).append(" with type ").append(type).append(" and number ").append(number).append("\n");
-        sb.append("Vertices:\n");
-        for (Coordinate vertex : vertices) {
-            sb.append("  ").append(vertex).append("\n");
-        }
-        sb.append("Edges:\n");
-        for (Edge edge : edges) {
-            sb.append("  ").append(edge).append("\n");
-        }
-        return sb.toString();
+        return "Tile{" +
+               "id=" + id +
+               ", coordinate=" + coordinate +
+               ", type=" + type +
+               ", number=" + (number != 0 ? number : "N/A") +
+               ", hasRobber=" + hasRobber +
+               ", isCoastalTile=" + isCoastalTile +
+               '}';
     }
 }

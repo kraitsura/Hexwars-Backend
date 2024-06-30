@@ -3,8 +3,8 @@ package com.hexwars.hexwars_backend.models.enums;
 public enum TileType {
     WOOD,
     BRICK,
-    WHEAT,
-    SHEEP,
+    GRAIN,
+    WOOL,
     ORE,
     DESERT, EMPTY;
 
@@ -14,10 +14,10 @@ public enum TileType {
             return ResourceType.WOOD;
             case BRICK:
             return ResourceType.BRICK;
-            case WHEAT:
-            return ResourceType.WHEAT;
-            case SHEEP:
-            return ResourceType.SHEEP;
+            case GRAIN:
+            return ResourceType.GRAIN;
+            case WOOL:
+            return ResourceType.WOOL;
             case ORE:
             return ResourceType.ORE;
             case DESERT:

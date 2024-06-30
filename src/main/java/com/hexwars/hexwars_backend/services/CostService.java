@@ -2,6 +2,9 @@ package com.hexwars.hexwars_backend.services;
 
 import com.hexwars.hexwars_backend.models.enums.CostType;
 import com.hexwars.hexwars_backend.models.enums.ResourceType;
+import com.hexwars.hexwars_backend.repository.PlayerRepository;
+
+import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.stereotype.Service;
 
 import java.util.Collections;
@@ -12,6 +15,9 @@ import java.util.Map;
 public class CostService {
 
     private static final Map<CostType, Map<ResourceType, Integer>> costMap;
+
+    @Autowired
+    private PlayerRepository playerRepository;
 
     static {
         Map<CostType, Map<ResourceType, Integer>> map = new EnumMap<>(CostType.class);
