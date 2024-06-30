@@ -28,66 +28,7 @@ public class PlayerService {
     @Autowired
     private CostService costManager;
 
-    public void build(Player player, Scanner scanner) {
-        System.out.println("Choose what to build: (1) Settlement, (2) City, (3) Road");
-        int choice = scanner.nextInt();
-        scanner.nextLine(); // Consume newline
-
-        CostType costType;
-        switch (choice) {
-            case 1:
-                costType = CostType.SETTLEMENT;
-                System.out.println("Enter the coordinates to place the settlement:");
-                String settlementCoords = scanner.nextLine();
-                Coordinate settlementCoordinate = parseCoordinate(settlementCoords);
-                if (settlementCoordinate != null && boardService.placeBuilding(getBoardId(player), settlementCoordinate, player, false)) {
-                    System.out.println("Settlement placed successfully.");
-                } else {
-                    System.out.println("Failed to place settlement.");
-                }
-                break;
-            case 2:
-                costType = CostType.CITY;
-                System.out.println("Enter the coordinates to upgrade to a city:");
-                String cityCoords = scanner.nextLine();
-                Coordinate cityCoordinate = parseCoordinate(cityCoords);
-                if (cityCoordinate != null && boardService.placeBuilding(getBoardId(player), cityCoordinate, player, true)) {
-                    System.out.println("City upgraded successfully.");
-                } else {
-                    System.out.println("Failed to upgrade to city.");
-                }
-                break;
-            case 3:
-                costType = CostType.ROAD;
-                System.out.println("Enter the coordinates for the road (format 'x1,y1-x2,y2'):");
-                String roadCoords = scanner.nextLine();
-                String[] roadParts = roadCoords.split("-");
-                if (roadParts.length == 2) {
-                    Coordinate roadStart = parseCoordinate(roadParts[0]);
-                    Coordinate roadEnd = parseCoordinate(roadParts[1]);
-                    if (roadStart != null && roadEnd != null && boardService.placeRoad(getBoardId(player), player, new Edge(roadStart, roadEnd))) {
-                        System.out.println("Road placed successfully.");
-                    } else {
-                        System.out.println("Failed to place road.");
-                    }
-                } else {
-                    System.out.println("Invalid road coordinates format.");
-                }
-                break;
-            default:
-                System.out.println("Invalid choice.");
-                return;
-        }
-
-        // Check if the player can afford the build
-        if (costManager.canAfford(costType, player.getResources())) {
-            costManager.deductCost(costType, player.getResources());
-            playerRepository.save(player);
-            System.out.println("Resources deducted for " + costType.name());
-        } else {
-            System.out.println("Insufficient resources to build " + costType.name());
-        }
-    }
+    
 
     public void trade(Player player, Scanner scanner) {
         System.out.println("Do you want to trade with (1) Another player or (2) The bank or (3) make an open offer?");
@@ -188,33 +129,4 @@ public class PlayerService {
         return player.getGameSession().getBoard().getId();
     }
 
-    private Coordinate parseCoordinate(String input) {
-        try {
-            String[] parts = input.trim().split(",");
-            int x = Integer.parseInt(parts[0].trim());
-            int y = Integer.parseInt(parts[1].trim());
-            return new Coordinate(x, y);
-        } catch (Exception e) {
-            System.out.println("Invalid coordinate format. Please enter coordinates in the format 'x,y'.");
-            return null;
-        }
-    }
 
-    private Map<ResourceType, Integer> parseResources(String input) {
-        Map<ResourceType, Integer> resourceMap = new HashMap<>();
-        String[] parts = input.split(",");
-        for (String part : parts) {
-            String[] resourceParts = part.split(":");
-            if (resourceParts.length == 2) {
-                try {
-                    ResourceType resource = ResourceType.valueOf(resourceParts[0].trim().toUpperCase());
-                    int quantity = Integer.parseInt(resourceParts[1].trim());
-                    resourceMap.put(resource, quantity);
-                } catch (Exception e) {
-                    System.out.println("Invalid resource format: " + part);
-                }
-            }
-        }
-        return resourceMap;
-    }
-}

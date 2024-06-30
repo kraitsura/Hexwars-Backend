@@ -1,5 +1,6 @@
 package com.hexwars.hexwars_backend.services;
 
+import java.util.HashMap;
 import java.util.Map;
 import java.util.Set;
 
@@ -7,6 +8,7 @@ import org.springframework.stereotype.Service;
 
 import com.hexwars.hexwars_backend.models.Board;
 import com.hexwars.hexwars_backend.models.Player;
+import com.hexwars.hexwars_backend.models.enums.ResourceType;
 import com.hexwars.hexwars_backend.models.structures.BuildingSpot;
 import com.hexwars.hexwars_backend.models.structures.Coordinate;
 import com.hexwars.hexwars_backend.models.structures.Edge;
@@ -119,5 +121,40 @@ public class RulesService {
 
         System.out.println("Cannot place road here. Not connected to player's buildings or roads.");
         return false;
+    }
+
+
+
+
+
+    // HELPERS FOR TESTING 
+    public static Coordinate parseCoordinate(String input) {
+        try {
+            String[] parts = input.trim().split(",");
+            int x = Integer.parseInt(parts[0].trim());
+            int y = Integer.parseInt(parts[1].trim());
+            return new Coordinate(x, y);
+        } catch (Exception e) {
+            System.out.println("Invalid coordinate format. Please enter coordinates in the format 'x,y'.");
+            return null;
+        }
+    }
+
+    public static Map<ResourceType, Integer> parseResources(String input) {
+        Map<ResourceType, Integer> resourceMap = new HashMap<>();
+        String[] parts = input.split(",");
+        for (String part : parts) {
+            String[] resourceParts = part.split(":");
+            if (resourceParts.length == 2) {
+                try {
+                    ResourceType resource = ResourceType.valueOf(resourceParts[0].trim().toUpperCase());
+                    int quantity = Integer.parseInt(resourceParts[1].trim());
+                    resourceMap.put(resource, quantity);
+                } catch (Exception e) {
+                    System.out.println("Invalid resource format: " + part);
+                }
+            }
+        }
+        return resourceMap;
     }
 }

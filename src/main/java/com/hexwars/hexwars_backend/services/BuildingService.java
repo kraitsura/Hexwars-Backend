@@ -8,6 +8,8 @@ import com.hexwars.hexwars_backend.repository.PlayerRepository;
 
 import jakarta.transaction.Transactional;
 
+import java.util.Scanner;
+
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.stereotype.Service;
 @Service
@@ -21,6 +23,61 @@ public class BuildingService {
 
     @Autowired
     private PlayerRepository playerRepository;
+
+    @Transactional
+    public void build(Long boardId, Long playerId, Scanner scanner) {
+        Board board = boardRepository.findById(boardId).orElse(null);
+        Player player = playerRepository.findById(playerId).orElse(null);
+        if (player == null || board == null) {
+            System.out.println("Player or board not found.");
+            return;
+        }
+        System.out.println("Choose what to build: (1) Settlement, (2) City, (3) Road");
+        int choice = scanner.nextInt();
+        scanner.nextLine(); 
+
+        switch (choice) {
+            case 1:
+                System.out.println("Enter the coordinates to place the settlement:");
+                String settlementCoords = scanner.nextLine();
+                Coordinate settlementCoordinate = RulesService.parseCoordinate(settlementCoords);
+                if (settlementCoordinate != null && placeBuilding(boardId, playerId, settlementCoordinate, false)) {
+                    System.out.println("Settlement placed successfully.");
+                } else {
+                    System.out.println("Failed to place settlement.");
+                }
+                break;
+            case 2:
+                System.out.println("Enter the coordinates to upgrade to a city:");
+                String cityCoords = scanner.nextLine();
+                Coordinate cityCoordinate = RulesService.parseCoordinate(cityCoords);
+                if (cityCoordinate != null && placeBuilding(boardId, playerId, cityCoordinate, true)) {
+                    System.out.println("City upgraded successfully.");
+                } else {
+                    System.out.println("Failed to upgrade to city.");
+                }
+                break;
+            case 3:
+                System.out.println("Enter the coordinates for the road (format 'x1,y1-x2,y2'):");
+                String roadCoords = scanner.nextLine();
+                String[] roadParts = roadCoords.split("-");
+                if (roadParts.length == 2) {
+                    Coordinate roadStart = RulesService.parseCoordinate(roadParts[0]);
+                    Coordinate roadEnd = RulesService.parseCoordinate(roadParts[1]);
+                    if (roadStart != null && roadEnd != null && placeRoad(boardId, playerId, new Edge(roadStart, roadEnd))) {
+                        System.out.println("Road placed successfully.");
+                    } else {
+                        System.out.println("Failed to place road.");
+                    }
+                } else {
+                    System.out.println("Invalid road coordinates format.");
+                }
+                break;
+            default:
+                System.out.println("Invalid choice.");
+                return;
+        }
+    }
 
     @Transactional
     public boolean placeInitialSettlement(Long boardId, Long playerId, Coordinate coord) {
