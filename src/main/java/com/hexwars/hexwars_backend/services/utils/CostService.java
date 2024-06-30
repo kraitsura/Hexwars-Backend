@@ -1,4 +1,4 @@
-package com.hexwars.hexwars_backend.services;
+package com.hexwars.hexwars_backend.services.utils;
 
 import com.hexwars.hexwars_backend.models.Player;
 import com.hexwars.hexwars_backend.models.enums.CostType;
@@ -59,6 +59,7 @@ public class CostService {
         return costMap.get(costType);
     }
 
+
     public static boolean canAfford(CostType costType, Player player) {
         Map<ResourceType, Integer> playerResources = player.getResources();
         Map<ResourceType, Integer> requiredResources = getCost(costType);
@@ -72,6 +73,7 @@ public class CostService {
         }
         return true;
     }
+
     @Transactional
     public void deductCost(CostType costType, Player player) {
         Map<ResourceType, Integer> playerResources = player.getResources(); 

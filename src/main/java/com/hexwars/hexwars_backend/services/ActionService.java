@@ -1,9 +1,9 @@
 package com.hexwars.hexwars_backend.services;
 
-import org.springframework.stereotype.Service;
+import java.util.Scanner;
 
-@Service
-public class ActionService {
-
-
+public interface ActionService {
+    void build(Long boardId, Long playerId, Scanner scanner);
+    void trade(Long gameId, Long playerId, Scanner scanner);
+    void buyDevCard(Long boardId, Long playerId);
 }

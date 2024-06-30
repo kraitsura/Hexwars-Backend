@@ -1,4 +1,4 @@
-package com.hexwars.hexwars_backend.services;
+package com.hexwars.hexwars_backend.services.utils;
 
 import java.util.HashMap;
 import java.util.Map;
@@ -122,10 +122,6 @@ public class RulesService {
         System.out.println("Cannot place road here. Not connected to player's buildings or roads.");
         return false;
     }
-
-
-
-
 
     // HELPERS FOR TESTING 
     public static Coordinate parseCoordinate(String input) {
