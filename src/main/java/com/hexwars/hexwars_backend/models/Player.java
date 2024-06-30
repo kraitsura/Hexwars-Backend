@@ -4,6 +4,7 @@ import com.hexwars.hexwars_backend.models.enums.DevCardType;
 import com.hexwars.hexwars_backend.models.enums.PlayerType;
 import com.hexwars.hexwars_backend.models.enums.ResourceType;
 
+import lombok.EqualsAndHashCode;
 import lombok.Getter;
 import lombok.Setter;
 import lombok.NoArgsConstructor;
@@ -16,6 +17,7 @@ import java.util.Map;
 @Table(name = "players")
 @Getter
 @Setter
+@EqualsAndHashCode
 @NoArgsConstructor
 public class Player {
     @Id
