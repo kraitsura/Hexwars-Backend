@@ -15,7 +15,7 @@ import com.hexwars.hexwars_backend.models.structures.Edge;
 import com.hexwars.hexwars_backend.models.structures.RoadSpot;
 
 @Service
-public class RulesService {
+public class Utils {
 
     public static boolean canPlaceCity(Board board, BuildingSpot spot, Player player) {
         if (spot.hasCity()) {
@@ -123,6 +123,19 @@ public class RulesService {
         return false;
     }
 
+    public static boolean hasRequiredResources(Player player, Map<ResourceType, Integer> requiredResources) {
+        Map<ResourceType, Integer> playerResources = player.getResources();
+        for (Map.Entry<ResourceType, Integer> entry : requiredResources.entrySet()) {
+            ResourceType resource = entry.getKey();
+            int quantity = entry.getValue();
+            if (playerResources.getOrDefault(resource, 0) < quantity) {
+                System.out.println("Player does not have enough " + resource + " to complete the trade.");
+                return false;
+            }
+        }
+        return true;
+    }
+
     // HELPERS FOR TESTING 
     public static Coordinate parseCoordinate(String input) {
         try {
@@ -148,6 +161,7 @@ public class RulesService {
                     resourceMap.put(resource, quantity);
                 } catch (Exception e) {
                     System.out.println("Invalid resource format: " + part);
+                    return null;
                 }
             }
         }

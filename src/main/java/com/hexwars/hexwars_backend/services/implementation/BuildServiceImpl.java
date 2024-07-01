@@ -42,7 +42,7 @@ public class BuildServiceImpl implements BuildService {
             return false;
         }
 
-        if(!RulesService.canPlaceInitalSettlement(board, spot)) {
+        if(!Utils.canPlaceInitalSettlement(board, spot)) {
             System.out.println("Cannot place initial settlement.");
             return false;
         }
@@ -71,7 +71,7 @@ public class BuildServiceImpl implements BuildService {
             return false;
         }
 
-        if (isCity && RulesService.canPlaceCity(board, spot, player) && CostService.canAfford(CostType.CITY, player)) {
+        if (isCity && Utils.canPlaceCity(board, spot, player) && CostService.canAfford(CostType.CITY, player)) {
 
             costService.deductCost(CostType.CITY, player);
             player.addVictoryPoints(1);
@@ -81,7 +81,7 @@ public class BuildServiceImpl implements BuildService {
 
         } else {
 
-            if (!RulesService.canPlaceSettlement(board, spot) && !CostService.canAfford(CostType.SETTLEMENT, player)){
+            if (!Utils.canPlaceSettlement(board, spot) && !CostService.canAfford(CostType.SETTLEMENT, player)){
                 return false;
             }
 
@@ -113,7 +113,7 @@ public class BuildServiceImpl implements BuildService {
             return false;
         }
 
-        if (!RulesService.canPlaceRoad(board, spot, player) && !CostService.canAfford(CostType.ROAD, player)) {
+        if (!Utils.canPlaceRoad(board, spot, player) && !CostService.canAfford(CostType.ROAD, player)) {
             return false;
         }
 

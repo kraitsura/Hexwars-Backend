@@ -86,4 +86,28 @@ public class CostService {
         player.setResources(playerResources);
         playerRepository.save(player);
     }
+
+    @Transactional
+    public void useResources(Player player, Map<ResourceType, Integer> resources) {
+        Map<ResourceType, Integer> playerResources = player.getResources();
+        for (Map.Entry<ResourceType, Integer> entry : resources.entrySet()) {
+            ResourceType resource = entry.getKey();
+            int amount = entry.getValue();
+            playerResources.put(resource, playerResources.get(resource) - amount);
+        }
+        player.setResources(playerResources);
+        playerRepository.save(player);
+    }
+
+    @Transactional
+    public void giveResources(Player player, Map<ResourceType, Integer> resources) {
+        Map<ResourceType, Integer> playerResources = player.getResources();
+        for (Map.Entry<ResourceType, Integer> entry : resources.entrySet()) {
+            ResourceType resource = entry.getKey();
+            int amount = entry.getValue();
+            playerResources.put(resource, playerResources.get(resource) + amount);
+        }
+        player.setResources(playerResources);
+        playerRepository.save(player);
+    }
 }

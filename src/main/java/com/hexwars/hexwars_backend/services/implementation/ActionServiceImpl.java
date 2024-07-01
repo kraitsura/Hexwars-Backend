@@ -18,7 +18,7 @@ import com.hexwars.hexwars_backend.models.structures.Edge;
 import com.hexwars.hexwars_backend.repository.*;
 import com.hexwars.hexwars_backend.services.*;
 import com.hexwars.hexwars_backend.services.utils.CostService;
-import com.hexwars.hexwars_backend.services.utils.RulesService;
+import com.hexwars.hexwars_backend.services.utils.Utils;
 
 import jakarta.transaction.Transactional;
 
@@ -30,6 +30,9 @@ public class ActionServiceImpl implements ActionService {
 
     @Autowired
     private TradeService tradeService;
+
+    @Autowired
+    private PlayerService playerService;
 
     @Autowired
     private CostService costService;
@@ -60,7 +63,7 @@ public class ActionServiceImpl implements ActionService {
             case 1:
                 System.out.println("Enter the coordinates to place the settlement:");
                 String settlementCoords = scanner.nextLine();
-                Coordinate settlementCoordinate = RulesService.parseCoordinate(settlementCoords);
+                Coordinate settlementCoordinate = Utils.parseCoordinate(settlementCoords);
                 if (settlementCoordinate != null && buildService.placeBuilding(boardId, playerId, settlementCoordinate, false)) {
                     System.out.println("Settlement placed successfully.");
                 } else {
@@ -70,7 +73,7 @@ public class ActionServiceImpl implements ActionService {
             case 2:
                 System.out.println("Enter the coordinates to upgrade to a city:");
                 String cityCoords = scanner.nextLine();
-                Coordinate cityCoordinate = RulesService.parseCoordinate(cityCoords);
+                Coordinate cityCoordinate = Utils.parseCoordinate(cityCoords);
                 if (cityCoordinate != null && buildService.placeBuilding(boardId, playerId, cityCoordinate, true)) {
                     System.out.println("City upgraded successfully.");
                 } else {
@@ -82,8 +85,8 @@ public class ActionServiceImpl implements ActionService {
                 String roadCoords = scanner.nextLine();
                 String[] roadParts = roadCoords.split("-");
                 if (roadParts.length == 2) {
-                    Coordinate roadStart = RulesService.parseCoordinate(roadParts[0]);
-                    Coordinate roadEnd = RulesService.parseCoordinate(roadParts[1]);
+                    Coordinate roadStart = Utils.parseCoordinate(roadParts[0]);
+                    Coordinate roadEnd = Utils.parseCoordinate(roadParts[1]);
                     if (roadStart != null && roadEnd != null && buildService.placeRoad(boardId, playerId, new Edge(roadStart, roadEnd))) {
                         System.out.println("Road placed successfully.");
                     } else {
@@ -115,16 +118,17 @@ public class ActionServiceImpl implements ActionService {
                 System.out.println("Enter the name of the player you want to trade with:");
                 String otherPlayerName = scanner.nextLine();
                 Player otherPlayer = playerRepository.findByName(otherPlayerName);
-                if (otherPlayer != null) {
+                Long otherPlayerId = otherPlayer != null ? otherPlayer.getId() : null;
+                if (otherPlayerId != null) {
                     System.out.println("Enter the resources you want to offer (format 'wood:1,brick:1'):");
                     String offer = scanner.nextLine();
-                    Map<ResourceType, Integer> offerMap = RulesService.parseResources(offer);
+                    Map<ResourceType, Integer> offerMap = Utils.parseResources(offer);
 
                     System.out.println("Enter the resources you want in return (format 'wood:1,brick:1'):");
                     String request = scanner.nextLine();
-                    Map<ResourceType, Integer> requestMap = RulesService.parseResources(request);
+                    Map<ResourceType, Integer> requestMap = Utils.parseResources(request);
 
-                    if (tradeService.trade(player, otherPlayer, offerMap, requestMap)) {
+                    if (playerService.executeTrade(playerId, otherPlayerId, offerMap, requestMap)) {
                         System.out.println("Trade successful.");
                     } else {
                         System.out.println("Trade failed.");
@@ -146,7 +150,7 @@ public class ActionServiceImpl implements ActionService {
                 int rate = scanner.nextInt();
                 scanner.nextLine(); // Consume newline
 
-                if (tradeService.tradeWithGame(player, giveResource, getResource, rate)) {
+                if (playerService.executeTradeWithBank(playerId, giveResource, getResource, rate)) {
                     System.out.println("Trade with bank successful.");
                 } else {
                     System.out.println("Trade with bank failed.");
@@ -155,11 +159,11 @@ public class ActionServiceImpl implements ActionService {
             case 3:
                 System.out.println("Enter the resources you want to offer (format 'wood:1,brick:1'):");
                 String offer = scanner.nextLine();
-                Map<ResourceType, Integer> offerMap = RulesService.parseResources(offer);
+                Map<ResourceType, Integer> offerMap = Utils.parseResources(offer);
 
                 System.out.println("Enter the resources you want in return (format 'wood:1,brick:1'):");
                 String request = scanner.nextLine();
-                Map<ResourceType, Integer> requestMap = RulesService.parseResources(request);
+                Map<ResourceType, Integer> requestMap = Utils.parseResources(request);
 
                 System.out.println("Trade offer failed.");
 
@@ -202,5 +206,25 @@ public class ActionServiceImpl implements ActionService {
         playerRepository.save(player);
         boardRepository.save(board);
         System.out.println("Development card " + chosenCard.name() + " purchased successfully.");
+    }
+
+    @Override
+    @Transactional
+    public void rob(Long boardId, Long playerId, Scanner scanner) {
+        Board board = boardRepository.findById(boardId).orElse(null);
+        Player player = playerRepository.findById(playerId).orElse(null);
+        if (player == null || board == null) {
+            System.out.println("Player or Board not found.");
+            return;
+        }
+        System.out.println("Enter the coordinates for the robber:");
+        String robberCoords = scanner.nextLine();
+        Coordinate robberCoordinate = Utils.parseCoordinate(robberCoords);
+        if (robberCoordinate == null) {
+            System.out.println("Invalid robber coordinates.");
+            return;
+        }
+        //buildService.moveRobber(boardId, robberCoordinate);
+        System.out.println("Robber moved successfully.");
     }
 }

@@ -35,7 +35,16 @@ public class Player {
     private int victoryPoints;
 
     @Column(nullable = false)
-    private int knightsPlayed;
+    public int knightsPlayed;
+
+    @Column(nullable = false)
+    private int roadsBuilt;
+
+    @Column(nullable = false)
+    private int settlementsBuilt;
+    
+    @Column(nullable = false)
+    private int citiesBuilt;
 
     @Column(nullable = false)
     private boolean longestRoad;
@@ -76,6 +85,9 @@ public class Player {
         this.color = color;
         this.victoryPoints = 0;
         this.knightsPlayed = 0;
+        this.roadsBuilt = 0;
+        this.settlementsBuilt = 0;
+        this.citiesBuilt = 0;
         this.longestRoad = false;
         this.largestArmy = false;
         this.hasPlayedDevCardThisTurn = false;
